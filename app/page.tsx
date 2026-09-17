@@ -61,6 +61,10 @@ function TermsGate({ onAccept }: { onAccept: () => void }) {
 
   const dodge = (event: PointerEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    if (attempts >= 5) {
+      onAccept();
+      return;
+    }
     const next = Math.min(attempts + 1, declineLines.length);
     setAttempts(next);
     const rangeX = Math.min(250, window.innerWidth * 0.3);
@@ -98,7 +102,7 @@ function TermsGate({ onAccept }: { onAccept: () => void }) {
             style={{ transform: `translate(${position.x}px, ${position.y}px) scale(${Math.max(0.72, 1 - attempts * 0.05)})` }}
             aria-label="Decline — this playful button moves away"
           >
-            {attempts >= 6 ? "Also accept 🙄" : attempts >= 4 ? "Decl…" : "Decline"}
+            {attempts >= 5 ? "Also accept 🙄" : attempts >= 4 ? "Decl…" : "Decline"}
           </button>
         </div>
         <p className={`decline-message ${attempts ? "visible" : ""}`} aria-live="polite">
@@ -347,12 +351,9 @@ function Finale() {
 
 function Story() {
   const [developerNote, setDeveloperNote] = useState(false);
-  const [soundOn, setSoundOn] = useState(false);
   return (
     <main className="story-shell">
-      <button className="sound-toggle" onClick={() => setSoundOn(!soundOn)} aria-pressed={soundOn}>
-        {soundOn ? "Soundtrack ready ♫" : "Soundtrack later ♫"}
-      </button>
+      <div className="sound-toggle" aria-label="A soundtrack will be added during personalisation">Soundtrack slot ♫</div>
       <section className="hero">
         <Petals />
         <div className="hero-orbit orbit-one" /><div className="hero-orbit orbit-two" />
