@@ -81,21 +81,22 @@ function TermsGate({ onAccept }: { onAccept: () => void }) {
       <section className="terms-card" aria-labelledby="terms-title">
         <div className="system-bar">
           <span className="status-light" />
-          SECURE SESSION · 20.09.2026
+          A PRIVATE LITTLE INVITATION · 20.09.2026
         </div>
-        <p className="mono-kicker">PRIVATE PACKAGE / RECIPIENT: RICHA</p>
-        <h1 id="terms-title">Birthday experience<br />terms of access</h1>
+        <p className="mono-kicker">FOR RICHA, ONLY · FROM NARESH</p>
+        <h1 id="terms-title">Before you enter,<br /><em>one tiny promise.</em></h1>
         <ol className="terms-list">
-          <li>Today, all arguments automatically favour the Birthday Girl.</li>
+          <li>Today, every argument automatically favours the Birthday Girl.</li>
           <li>Compliments are final, non-refundable and cannot be disputed.</li>
-          <li>Embarrassing photographs may appear without further warning.</li>
-          <li>Smiling, laughing, crying or saying “Naresh, what is this?” is normal.</li>
-          <li>All memories are permanently licensed to both parties.</li>
-          <li>The Recipient agrees to be loved an unreasonable amount.</li>
+          <li>A few embarrassing photographs may appear without warning.</li>
+          <li>Smiling, laughing, crying or saying “Naresh, what is this?” is encouraged.</li>
+          <li>All memories are shared property, forever.</li>
+          <li>The recipient agrees to be loved an unreasonable amount.</li>
         </ol>
         <div className="gate-actions">
-          <button className="primary-button" onClick={onAccept}>Accept terms <span>♥</span></button>
+          <button type="button" className="primary-button" onClick={onAccept}>I accept the love <span>♥</span></button>
           <button
+            type="button"
             className={`decline-button attempt-${attempts}`}
             onPointerEnter={dodge}
             onPointerDown={dodge}
@@ -106,8 +107,9 @@ function TermsGate({ onAccept }: { onAccept: () => void }) {
           </button>
         </div>
         <p className={`decline-message ${attempts ? "visible" : ""}`} aria-live="polite">
-          {attempts ? declineLines[Math.min(attempts - 1, declineLines.length - 1)] : "Two totally fair choices."}
+          {attempts ? declineLines[Math.min(attempts - 1, declineLines.length - 1)] : "No pressure. Though the pink button is clearly the right one."}
         </p>
+        <div className="card-stamp" aria-hidden="true">MADE<br />WITH<br />LOVE</div>
       </section>
     </main>
   );
