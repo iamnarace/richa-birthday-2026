@@ -36,11 +36,11 @@ const albumPages = [
 ] as const;
 
 const terms = [
-  ["आजको दिन पूर्ण रूपमा Birthday Girl को हो।", "Today belongs completely to the birthday girl."],
-  ["तिम्रो मुस्कान यस अनुभवको सबैभन्दा सुन्दर भाग हो।", "Your smile is the most beautiful part of this surprise."],
-  ["केही फोटोले हँसाउन वा लजाउन सक्छन्।", "Some photos may make you laugh, blush, or both."],
-  ["‘Naresh, यो के बनाएको?’ भन्न पूर्ण अनुमति छ।", "Saying “Naresh, what have you made?” is fully permitted."],
-  ["आज र सधैँ, धेरै माया स्वीकार गर्नुपर्नेछ।", "Today and always, you agree to be loved beyond measure."],
+  "आजको दिन completely Birthday Girl को हो—no arguments allowed.",
+  "तिम्रो smile आजको सबैभन्दा important decoration हो।",
+  "केही photos हेर्दा हाँस्न, लजाउन वा ‘Naresh!’ भन्न पाइन्छ।",
+  "आजको सबै decisions मा Richa automatically right हुनेछिन्।",
+  "And finally—आज र सधैँ, धेरै माया accept गर्नुपर्नेछ।",
 ] as const;
 
 function Terms({ onAccept }: { onAccept: () => void }) {
@@ -58,8 +58,8 @@ function Terms({ onAccept }: { onAccept: () => void }) {
           <h2>Dear Richa,</h2>
           <p className="nepali intro">यो सानो surprise खोल्नुअघि, मायाका यी सर्तहरू पढेर स्वीकार गर्नुहोस्।</p>
           <ol>
-            {terms.map(([np, en], index) => (
-              <li key={np}><b>{String(index + 1).padStart(2, "0")}</b><div><strong>{np}</strong><span>{en}</span></div></li>
+            {terms.map((line, index) => (
+              <li key={line}><b>{String(index + 1).padStart(2, "0")}</b><div><strong>{line}</strong></div></li>
             ))}
           </ol>
           <div className="signed"><small>Made only for</small><strong>Richa</strong><span>धेरै मायासहित — Naresh</span></div>
@@ -81,7 +81,7 @@ function PhotoAlbum() {
     <div className="book-wrap">
       <div className="book">
         <div className="book-head">
-          <span>OUR PHOTO ALBUM</span>
+          <span>OUR PHOTO ALBUM · ALL 9 PHOTOS</span>
           <b>{page + 1} / {albumPages.length}</b>
         </div>
         <h2>{current.label}</h2>
@@ -130,9 +130,87 @@ function CakeStep({ onNext }: { onNext: () => void }) {
   );
 }
 
+const whoQuestions = [
+  "Who takes more photos before choosing the perfect one?",
+  "Who is more likely to say ‘म रिसाएको छैन’ while clearly रिसाएको?",
+  "Who turns a simple outing into a full adventure?",
+  "Who wins an argument with the strongest facial expression?",
+] as const;
+
+const habitCards = [
+  ["📸", "photo"], ["🧳", "travel"], ["☕", "tea"],
+  ["🧳", "travel"], ["☕", "tea"], ["📸", "photo"],
+] as const;
+
+function GameRoom({ onNext }: { onNext: () => void }) {
+  const [game, setGame] = useState(0);
+  const [roses, setRoses] = useState<boolean[]>(Array(6).fill(false));
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [openCards, setOpenCards] = useState<number[]>([]);
+  const [matched, setMatched] = useState<string[]>([]);
+  const roseTotal = roses.filter(Boolean).length;
+
+  const chooseCard = (index: number) => {
+    const [, label] = habitCards[index];
+    if (matched.includes(label) || openCards.includes(index)) return;
+    if (openCards.length === 0 || openCards.length === 2) {
+      setOpenCards([index]);
+      return;
+    }
+    const firstLabel = habitCards[openCards[0]][1];
+    if (firstLabel === label) {
+      setMatched((current) => [...current, label]);
+      setOpenCards([]);
+    } else {
+      setOpenCards([...openCards, index]);
+    }
+  };
+
+  return (
+    <div className="game-room">
+      <div className="game-heading">
+        <small>BIRTHDAY GAME ROOM · अब अलिकति खेलौँ</small>
+        <h2>{game === 0 ? "Collect six roses" : game === 1 ? "Who does what?" : "Match our little habits"}</h2>
+        <p>{game === 0 ? "Richa का लागि सबै roses collect गर—one tap at a time." : game === 1 ? "There is no wrong answer… but there may be consequences 😌" : "Same habit भएका दुई cards भेटाऊ।"}</p>
+      </div>
+
+      {game === 0 ? (
+        <div className="rose-field">
+          {roses.map((caught, index) => <button key={index} className={caught ? "caught" : ""} onClick={() => setRoses((current) => current.map((value, i) => i === index ? true : value))} aria-label={`Collect rose ${index + 1}`}>🌹</button>)}
+          <strong>{roseTotal} / 6</strong><span>ROSES FOR RICHA</span>
+          {roseTotal === 6 ? <button className="game-continue" onClick={() => setGame(1)}>Next game →</button> : null}
+        </div>
+      ) : null}
+
+      {game === 1 ? (
+        <div className="who-game">
+          <h3>{answers.length < whoQuestions.length ? whoQuestions[answers.length] : "Official result: दुवै जना equally guilty—and perfect together. 😂"}</h3>
+          {answers.length < whoQuestions.length ? (
+            <div>{["Richa", "Naresh", "दुवै · Both"].map((choice) => <button key={choice} onClick={() => setAnswers((current) => [...current, choice])}>{choice}</button>)}</div>
+          ) : <button className="game-continue" onClick={() => setGame(2)}>Final game →</button>}
+          <p>{answers.map((answer, index) => <span key={index}>{index + 1}. {answer}</span>)}</p>
+        </div>
+      ) : null}
+
+      {game === 2 ? (
+        <div className="match-game">
+          <div className="match-grid">
+            {habitCards.map(([emoji, label], index) => {
+              const shown = openCards.includes(index) || matched.includes(label);
+              return <button key={index} className={shown ? "shown" : ""} onClick={() => chooseCard(index)} aria-label={shown ? label : "Hidden habit card"}>{shown ? emoji : "♥"}</button>;
+            })}
+          </div>
+          <p>{matched.length} / 3 habits matched</p>
+          {matched.length === 3 ? <button className="game-continue" onClick={onNext}>Games complete · अगाडि जाऔँ →</button> : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function Experience() {
   const [step, setStep] = useState(0);
-  const lastStep = 7;
+  const lastStep = 8;
   const next = () => setStep((value) => Math.min(lastStep, value + 1));
   const back = () => setStep((value) => Math.max(0, value - 1));
 
@@ -142,7 +220,7 @@ function Experience() {
       <header className="journey-header">
         <button onClick={back} disabled={step === 0} aria-label="Previous chapter">←</button>
         <div>{Array.from({ length: lastStep + 1 }, (_, index) => <i key={index} className={index === step ? "active" : index < step ? "done" : ""} />)}</div>
-        <span>{String(step + 1).padStart(2, "0")} / 08</span>
+        <span>{String(step + 1).padStart(2, "0")} / 09</span>
       </header>
 
       <section className={`chapter reveal ${step === 0 ? "visible" : ""}`} aria-hidden={step !== 0}>
@@ -173,16 +251,15 @@ function Experience() {
         </div>
       </section>
 
-      <section className={`chapter letter reveal ${step === 5 ? "visible" : ""}`} aria-hidden={step !== 5}>
+      <section className={`chapter letter reveal ${step === 6 ? "visible" : ""}`} aria-hidden={step !== 6}>
         <div className="letter-photo"><Image src="/album/our-selfie.webp" alt="Richa and Naresh together" fill sizes="(max-width: 800px) 100vw, 45vw" /></div>
         <article>
           <small>एउटा सानो चिठी · A LETTER FOR YOU</small>
           <h2>प्रिय रिचा,<br /><em>जन्मदिनको धेरै धेरै शुभकामना।</em></h2>
-          <p className="nepali">तिमीलाई जन्मदिनको शुभकामना भन्न एउटा साधारण message मात्र पर्याप्त लागेन, त्यसैले तिम्रो लागि यो सानो संसार बनाएँ। तिमीसँग बिताएका दिनहरू, हाँसो, यात्रा र घरका सामान्य पलहरू—यी सबै मेरो जीवनका सबैभन्दा बहुमूल्य सम्झना हुन्।</p>
-          <p className="nepali">तिमी मेरो जीवनमा आएपछि “घर” एउटा ठाउँ मात्र रहेन; तिमी जहाँ छौ, त्यहीँ मेरो घर भयो। तिम्रो खुसीमा सँगै हाँस्न, गाह्रो दिनमा तिम्रो हात समात्न, र आउने हरेक वर्ष तिमीसँगै बढ्न पाउनु मेरो सबैभन्दा ठूलो चाहना हो।</p>
-          <p>I built this because one birthday message felt far too small for everything I wanted to tell you. Thank you for being the warmth in our home, the calm in difficult moments, and the person who makes even an unplanned, ordinary day worth remembering.</p>
-          <p>I love the life we are creating—not because every moment is perfect, but because it is ours. I want to keep choosing you through every new place, every change, every silly disagreement, every quiet evening, and every dream still waiting for us.</p>
-          <p className="nepali">आज तिमीले आफूलाई मेरो आँखाबाट हेर्न सक—दयालु, साहसी, सुन्दर, रमाइलो र असीमित माया पाउन योग्य। तिमीलाई पाएकोमा म हरेक दिन आभारी छु।</p>
+          <p className="nepali">तिमीलाई Happy Birthday भन्न एउटा साधारण message मात्रै enough लागेन, त्यसैले तिम्रो लागि यो सानो संसार बनाएँ। तिमीसँग बिताएका हाँसो, यात्रा र घरका normal moments—यी सबै मेरो life का सबैभन्दा precious memories हुन्।</p>
+          <p className="nepali">तिमी मेरो जीवनमा आएपछि “home” एउटा ठाउँ मात्र रहेन; तिमी जहाँ छौ, त्यहीँ मेरो घर भयो। Thank you for being the warmth in our home, कठिन दिनको calm, र कुनै plan नभएको साधारण दिनलाई पनि यादगार बनाउने मान्छे।</p>
+          <p className="nepali">I love the life हामीले सँगै बनाइरहेका छौँ—not because every moment is perfect, but because it is ours. नयाँ ठाउँ, change, silly disagreement, quiet evening र बाँकी रहेका हरेक dream मा म फेरि पनि तिमीलाई नै choose गर्न चाहन्छु।</p>
+          <p className="nepali">आज तिमीले आफूलाई मेरो आँखाबाट हेर्न सक—kind, brave, beautiful, wonderfully funny, र असीमित माया पाउन योग्य। तिमीलाई पाएकोमा I am grateful every single day.</p>
           <strong>सधैँ तिम्रो, <i>Naresh</i></strong>
           <button onClick={next}>Read my wish for you <b>→</b></button>
         </article>
@@ -197,7 +274,11 @@ function Experience() {
         <CakeStep onNext={next} />
       </section>
 
-      <section className={`chapter reasons reveal ${step === 4 ? "visible" : ""}`} aria-hidden={step !== 4}>
+      <section className={`chapter games-chapter reveal ${step === 4 ? "visible" : ""}`} aria-hidden={step !== 4}>
+        <GameRoom onNext={next} />
+      </section>
+
+      <section className={`chapter reasons reveal ${step === 5 ? "visible" : ""}`} aria-hidden={step !== 5}>
         <div className="reasons-title"><small>A FEW OF A MILLION REASONS</small><h2>म तिमीलाई किन<br /><em>यति धेरै माया गर्छु</em></h2></div>
         <div className="reason-cards">
           <article><b>01</b><h3>तिम्रो मन</h3><p>सानो कुरामा पनि देखिने तिम्रो माया र care गर्ने बानी।</p></article>
@@ -208,18 +289,17 @@ function Experience() {
         <button className="chapter-next" onClick={next}>There is a letter for you <b>→</b></button>
       </section>
 
-      <section className={`chapter wish reveal ${step === 6 ? "visible" : ""}`} aria-hidden={step !== 6}>
+      <section className={`chapter wish reveal ${step === 7 ? "visible" : ""}`} aria-hidden={step !== 7}>
         <div className="wish-photo"><Image src="/album/our-mountain-day.webp" alt="Richa and Naresh in the mountains" fill sizes="100vw" /></div>
         <div className="wish-card">
           <small>MY WISH FOR YOU</small>
           <h2>यो वर्ष तिम्रो मनजस्तै<br /><em>सुन्दर होस्।</em></h2>
-          <p className="nepali">तिम्रो हरेक सपना पूरा होस्, हरेक दिन खुसीले भरियोस्, र जीवनको हरेक यात्रामा म तिम्रो साथमा रहन पाऊँ।</p>
-          <p>May this new year of your life bring you peace, laughter, proud moments, and every beautiful thing you deserve.</p>
+          <p className="nepali">तिम्रो हरेक dream पूरा होस्, हरेक दिनमा peace र laughter होस्, र तिमीलाई आफूमाथि proud हुने अनगिन्ती moments मिलून्। Life को हरेक यात्रामा म तिम्रो side मा रहन पाऊँ—that is my wish too.</p>
           <button onClick={next}>Make a birthday wish ✦</button>
         </div>
       </section>
 
-      <section className={`chapter final reveal ${step === 7 ? "visible" : ""}`} aria-hidden={step !== 7}>
+      <section className={`chapter final reveal ${step === 8 ? "visible" : ""}`} aria-hidden={step !== 8}>
         <div className="final-photo"><Image src="/album/our-special-day.webp" alt="Richa and Naresh on a special day" fill sizes="100vw" /></div>
         <div className="final-shade" />
         <div className="final-copy">
