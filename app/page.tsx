@@ -103,9 +103,36 @@ function PhotoAlbum() {
   );
 }
 
+function CakeStep({ onNext }: { onNext: () => void }) {
+  const [candles, setCandles] = useState([true, true, true, true]);
+  const remaining = candles.filter(Boolean).length;
+  return (
+    <section className="cake-step">
+      <div className="cake-copy">
+        <small>एउटा इच्छा माग · MAKE A WISH</small>
+        <h2>Four little flames,<br /><em>one beautiful wish.</em></h2>
+        <p className="nepali">हरेक बत्तीलाई छोएर निभाऊ। अन्तिम बत्ती निभाउँदा मनमनै एउटा इच्छा माग—म त्यो पूरा होस् भनेर सधैँ कामना गर्नेछु।</p>
+        <p>Tap each candle, take a breath, and keep your wish secret. Some things are too precious to say out loud.</p>
+      </div>
+      <div className="cake-area">
+        <div className="candles">
+          {candles.map((lit, index) => (
+            <button key={index} className={lit ? "lit" : ""} onClick={() => setCandles((current) => current.map((value, i) => i === index ? false : value))} aria-label={`Blow out candle ${index + 1}`}>
+              <i /><span />
+            </button>
+          ))}
+        </div>
+        <div className="birthday-cake"><div /><div /><strong>R</strong></div>
+        <p>{remaining ? `${remaining} बत्ती बाँकी · ${remaining} candle${remaining === 1 ? "" : "s"} left` : "इच्छा सुरक्षित भयो ✦ Wish safely kept"}</p>
+        {remaining === 0 ? <button className="cake-next" onClick={onNext}>Continue the surprise →</button> : null}
+      </div>
+    </section>
+  );
+}
+
 function Experience() {
   const [step, setStep] = useState(0);
-  const lastStep = 5;
+  const lastStep = 7;
   const next = () => setStep((value) => Math.min(lastStep, value + 1));
   const back = () => setStep((value) => Math.max(0, value - 1));
 
@@ -115,7 +142,7 @@ function Experience() {
       <header className="journey-header">
         <button onClick={back} disabled={step === 0} aria-label="Previous chapter">←</button>
         <div>{Array.from({ length: lastStep + 1 }, (_, index) => <i key={index} className={index === step ? "active" : index < step ? "done" : ""} />)}</div>
-        <span>{String(step + 1).padStart(2, "0")} / 06</span>
+        <span>{String(step + 1).padStart(2, "0")} / 08</span>
       </header>
 
       <section className={`chapter reveal ${step === 0 ? "visible" : ""}`} aria-hidden={step !== 0}>
@@ -130,15 +157,34 @@ function Experience() {
         </div>
       </section>
 
-      <section className={`chapter letter reveal ${step === 1 ? "visible" : ""}`} aria-hidden={step !== 1}>
+      <section className={`chapter dossier reveal ${step === 1 ? "visible" : ""}`} aria-hidden={step !== 1}>
+        <div className="dossier-photo"><Image src="/album/richa-boardwalk.webp" alt="Richa smiling on a boardwalk" fill sizes="(max-width: 800px) 100vw, 48vw" /></div>
+        <div className="dossier-copy">
+          <small>CHAPTER ONE · तिम्रो बारेमा</small>
+          <h2>A tiny dossier<br />on <em>my favourite person.</em></h2>
+          <p className="nepali">आधिकारिक रूपमा Naresh द्वारा तयार गरिएको—किनकि तिम्रो बारेमा लेख्न अरू कसलाई यति धेरै थाहा र माया छ र?</p>
+          <div className="facts">
+            <article><span>Official title</span><strong>मेरो खुसीको कारण</strong><p>the reason ordinary days feel special</p></article>
+            <article><span>Special talent</span><strong>घरलाई घर बनाउने</strong><p>making every place feel warm</p></article>
+            <article><span>Current status</span><strong>असीमित माया पाइरहेकी</strong><p>loved beyond any reasonable limit</p></article>
+          </div>
+          <blockquote>“The world feels lighter, warmer, and much more beautiful with you in it.”</blockquote>
+          <button onClick={next}>Show me the receipts <b>→</b></button>
+        </div>
+      </section>
+
+      <section className={`chapter letter reveal ${step === 5 ? "visible" : ""}`} aria-hidden={step !== 5}>
         <div className="letter-photo"><Image src="/album/our-selfie.webp" alt="Richa and Naresh together" fill sizes="(max-width: 800px) 100vw, 45vw" /></div>
         <article>
-          <small>तिम्रो लागि · FOR YOU</small>
-          <h2>तिमी मेरो जीवनको<br /><em>सबैभन्दा सुन्दर भाग हौ।</em></h2>
-          <p className="nepali">Richa, तिम्रो साथले साधारण दिनहरू पनि विशेष हुन्छन्। तिम्रो हाँसोले घर उज्यालो हुन्छ, अनि तिमीसँग बिताएको हरेक पल मेरो मन पर्ने सम्झना बन्छ।</p>
-          <p>You bring warmth into my life in ways I can never fully explain. I hope today lets you see yourself the way I see you—kind, strong, wonderfully funny, and deeply loved.</p>
+          <small>एउटा सानो चिठी · A LETTER FOR YOU</small>
+          <h2>प्रिय रिचा,<br /><em>जन्मदिनको धेरै धेरै शुभकामना।</em></h2>
+          <p className="nepali">तिमीलाई जन्मदिनको शुभकामना भन्न एउटा साधारण message मात्र पर्याप्त लागेन, त्यसैले तिम्रो लागि यो सानो संसार बनाएँ। तिमीसँग बिताएका दिनहरू, हाँसो, यात्रा र घरका सामान्य पलहरू—यी सबै मेरो जीवनका सबैभन्दा बहुमूल्य सम्झना हुन्।</p>
+          <p className="nepali">तिमी मेरो जीवनमा आएपछि “घर” एउटा ठाउँ मात्र रहेन; तिमी जहाँ छौ, त्यहीँ मेरो घर भयो। तिम्रो खुसीमा सँगै हाँस्न, गाह्रो दिनमा तिम्रो हात समात्न, र आउने हरेक वर्ष तिमीसँगै बढ्न पाउनु मेरो सबैभन्दा ठूलो चाहना हो।</p>
+          <p>I built this because one birthday message felt far too small for everything I wanted to tell you. Thank you for being the warmth in our home, the calm in difficult moments, and the person who makes even an unplanned, ordinary day worth remembering.</p>
+          <p>I love the life we are creating—not because every moment is perfect, but because it is ours. I want to keep choosing you through every new place, every change, every silly disagreement, every quiet evening, and every dream still waiting for us.</p>
+          <p className="nepali">आज तिमीले आफूलाई मेरो आँखाबाट हेर्न सक—दयालु, साहसी, सुन्दर, रमाइलो र असीमित माया पाउन योग्य। तिमीलाई पाएकोमा म हरेक दिन आभारी छु।</p>
           <strong>सधैँ तिम्रो, <i>Naresh</i></strong>
-          <button onClick={next}>Open our album <b>→</b></button>
+          <button onClick={next}>Read my wish for you <b>→</b></button>
         </article>
       </section>
 
@@ -147,7 +193,11 @@ function Experience() {
         <button className="chapter-next" onClick={next}>There is more <b>→</b></button>
       </section>
 
-      <section className={`chapter reasons reveal ${step === 3 ? "visible" : ""}`} aria-hidden={step !== 3}>
+      <section className={`chapter cake-chapter reveal ${step === 3 ? "visible" : ""}`} aria-hidden={step !== 3}>
+        <CakeStep onNext={next} />
+      </section>
+
+      <section className={`chapter reasons reveal ${step === 4 ? "visible" : ""}`} aria-hidden={step !== 4}>
         <div className="reasons-title"><small>A FEW OF A MILLION REASONS</small><h2>म तिमीलाई किन<br /><em>यति धेरै माया गर्छु</em></h2></div>
         <div className="reason-cards">
           <article><b>01</b><h3>तिम्रो मन</h3><p>सानो कुरामा पनि देखिने तिम्रो माया र care गर्ने बानी।</p></article>
@@ -155,10 +205,10 @@ function Experience() {
           <article><b>03</b><h3>तिम्रो शक्ति</h3><p>शान्त, बलियो र सुन्दर—हरेक कठिनाइमा पनि अगाडि बढ्ने तिमी।</p></article>
           <article><b>04</b><h3>Simply you</h3><p>तिम्रो हाँसो, बानी र अलिकति रिस—सबै मिलेर मेरो प्रिय तिमी।</p></article>
         </div>
-        <button className="chapter-next" onClick={next}>One last surprise <b>→</b></button>
+        <button className="chapter-next" onClick={next}>There is a letter for you <b>→</b></button>
       </section>
 
-      <section className={`chapter wish reveal ${step === 4 ? "visible" : ""}`} aria-hidden={step !== 4}>
+      <section className={`chapter wish reveal ${step === 6 ? "visible" : ""}`} aria-hidden={step !== 6}>
         <div className="wish-photo"><Image src="/album/our-mountain-day.webp" alt="Richa and Naresh in the mountains" fill sizes="100vw" /></div>
         <div className="wish-card">
           <small>MY WISH FOR YOU</small>
@@ -169,7 +219,7 @@ function Experience() {
         </div>
       </section>
 
-      <section className={`chapter final reveal ${step === 5 ? "visible" : ""}`} aria-hidden={step !== 5}>
+      <section className={`chapter final reveal ${step === 7 ? "visible" : ""}`} aria-hidden={step !== 7}>
         <div className="final-photo"><Image src="/album/our-special-day.webp" alt="Richa and Naresh on a special day" fill sizes="100vw" /></div>
         <div className="final-shade" />
         <div className="final-copy">
