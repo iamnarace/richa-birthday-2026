@@ -1,17 +1,19 @@
-# Project Richa — Birthday Release 2026
+# Richa Birthday Album — 2026
 
-A private interactive birthday experience built with Next.js for 20 September 2026.
+A private, mobile-first birthday album created for Richa by Naresh for 20 September 2026.
 
-## Personalise
+## Experience
 
-1. Add photos to `public/memories/`.
-2. Edit memories, reasons and wishes in `data/memories.ts`.
-3. Replace the letter in `app/page.tsx`.
-4. Optionally add a licensed soundtrack to `public/audio/` and wire it to the sound control.
+- Personalised English and Nepali entrance card
+- One-page, scrollable birthday story
+- Nine-photo responsive album with full-screen viewing
+- Mobile-first layout and accessible controls
 
-## Run
+## Run locally
 
 ```bash
 npm install
 npm run dev
 ```
+
+Production build: `npm run build`
