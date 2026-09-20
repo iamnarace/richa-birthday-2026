@@ -176,8 +176,9 @@ function GameRoom({ onNext }: { onNext: () => void }) {
 
       {game === 0 ? (
         <div className="rose-field">
-          {roses.map((caught, index) => <button key={index} className={caught ? "caught" : ""} onClick={() => setRoses((current) => current.map((value, i) => i === index ? true : value))} aria-label={`Collect rose ${index + 1}`}>🌹</button>)}
-          <strong>{roseTotal} / 6</strong><span>ROSES FOR RICHA</span>
+          {roses.map((caught, index) => <button key={index} className={caught ? "caught" : ""} onClick={() => setRoses((current) => current.map((value, i) => i === index ? true : value))} aria-label={`Collect rose ${index + 1}`} disabled={caught}>🌹</button>)}
+          <strong aria-live="polite">{roseTotal} / 6</strong><span>ROSES FOR RICHA</span>
+          <div className="rose-bouquet" aria-label={`${roseTotal} roses collected`}>{roses.map((caught, index) => <span key={index} aria-hidden="true">{caught ? "🌹" : "·"}</span>)}</div>
           {roseTotal === 6 ? <button className="game-continue" onClick={() => setGame(1)}>Next game →</button> : null}
         </div>
       ) : null}
@@ -302,11 +303,16 @@ function Experience() {
       <section className={`chapter final reveal ${step === 8 ? "visible" : ""}`} aria-hidden={step !== 8}>
         <div className="final-photo"><Image src="/album/our-special-day.webp" alt="Richa and Naresh on a special day" fill sizes="100vw" /></div>
         <div className="final-shade" />
+        <div className="celebration" aria-hidden="true">
+          {Array.from({ length: 7 }, (_, index) => <span className="balloon" key={`balloon-${index}`} style={{ "--i": index } as React.CSSProperties} />)}
+          {Array.from({ length: 3 }, (_, index) => <span className="firework" key={`firework-${index}`} style={{ "--i": index } as React.CSSProperties} />)}
+          {Array.from({ length: 9 }, (_, index) => <span className="flower" key={`flower-${index}`} style={{ "--i": index } as React.CSSProperties}>✿</span>)}
+        </div>
         <div className="final-copy">
           <span>♥</span>
           <p>मेरो माया, मेरो साथी, मेरो घर</p>
           <h2>Happy Birthday,<br /><em>Richa</em></h2>
-          <blockquote>तिमीलाई पाएकोमा म हरेक दिन आभारी छु।<br />आज, भोलि र सधैँ—म तिमीलाई माया गर्छु।</blockquote>
+          <blockquote>तिमीलाई भेटेपछि life का साना moments पनि beautiful memories बने। हाम्रो यात्राका photos, सँगै मनाएका traditions, र कुनै plan नभएका साधारण दिनहरू—सबैमा मेरो मन पर्ने कुरा तिमी नै हौ।<br /><br />यो नयाँ वर्षले तिमीलाई धेरै हाँसो, शान्ति, नयाँ adventures र तिम्रो मनले चाहेका सबै सपनातिर लैजाओस्। कठिन दिनमा तिम्रो हात समाउन र खुसीका दिनमा तिमीसँग अझ ठूलो स्वरले हाँस्न म सधैँ यहाँ छु।<br /><br />Thank you for being in my life, मेरो माया। तिमीसँग बितेको हरेक दिन एउटा gift हो। आज, भोलि र आउने हरेक birthday मा, I choose you. ❤️</blockquote>
           <strong>Love, Naresh</strong>
           <button onClick={() => setStep(0)}>फेरि हेर्नुहोस् · Replay</button>
         </div>
